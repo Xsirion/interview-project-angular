@@ -2,8 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SignalRService } from '../../services/signalr.service';
 import { StocksStore } from '../../stores/stocks.store';
-
-//import { Subscription } from 'rxjs';
+import { ConnectionStatus } from '../../model/stock.model';
 
 @Component({
   selector: 'app-stocks-table',
@@ -14,6 +13,22 @@ import { StocksStore } from '../../stores/stocks.store';
 export class StocksTable implements OnInit, OnDestroy {
   public signalRService = inject(SignalRService);
   protected readonly stocksStore = inject(StocksStore);
+
+  connect = () => this.signalRService.connect();
+  disconnect = () => this.signalRService.disconnect();
+  refresh = () => this.stocksStore.refresh();
+
+  get isConnected() {
+    return this.stocksStore.connectionStatus() === ConnectionStatus.Connected;
+  }
+
+  get isLoading() {
+    return this.stocksStore.isLoading();
+  }
+
+  get isError() {
+    return this.stocksStore.error();
+  }
 
   ngOnInit(): void {
     this.setupSubscriptions();
@@ -30,9 +45,7 @@ export class StocksTable implements OnInit, OnDestroy {
     this.stocksStore.listenToAllStocks();
   }
 
-  // UPROSZCZONA metoda animacji - jedna zamiast dwóch
   getCellAnimationClass(symbol: string, field: string): string {
-    // Sprawdź typ animacji i zwróć odpowiednią klasę
     if (this.stocksStore.hasAnimation(symbol, field, 'increase')) {
       return 'cell-increase';
     }
@@ -45,7 +58,6 @@ export class StocksTable implements OnInit, OnDestroy {
     return '';
   }
 
-  // Formatowanie - bez zmian
   formatPrice(value: number): string {
     return value.toFixed(4).replace('.', ',');
   }

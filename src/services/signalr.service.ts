@@ -70,7 +70,6 @@ export class SignalRService {
       this.allStocksSubject.next(stocks);
     });
 
-    // Handler dla backendu Docker (updateStockPrice)
     this.hubConnection.on('updateStockPrice', (stockUpdate: Stock) => {
       if (stockUpdate) {
         // const stock: Stock = {
@@ -93,7 +92,6 @@ export class SignalRService {
     //   console.log('🔍 Unknown SignalR event received:', args);
     // });
 
-    // Obsługa event-ów połączenia
     this.hubConnection.onclose(() => {
       this.connectionStatusSubject.next(ConnectionStatus.Disconnected);
       console.log('SignalR Disconnected');
@@ -122,7 +120,6 @@ export class SignalRService {
     }
   }
 
-  // Sprawdzenie statusu połączenia
   get isConnected(): boolean {
     return this.hubConnection?.state === 'Connected';
   }

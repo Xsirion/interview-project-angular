@@ -1,5 +1,4 @@
 <div class="bg-white rounded-lg shadow-lg overflow-hidden m-5">
-  <!-- Header -->
   <div class="bg-blue-800 text-white px-6 py-4">
     <h2 class="text-xl font-semibold">Tabela Akcji</h2>
     <div class="text-sm mt-1 flex items-center gap-4">
@@ -10,22 +9,26 @@
       @if (stocksStore.lastUpdateTime()) {
         <span>Ostatnia aktualizacja: {{ formatDate(stocksStore.lastUpdateTime()) }}</span>
       }
+      @if (isConnected) {
+        <button (click)="disconnect()">Rozłącz</button>
+      } @else {
+        <button (click)="connect()">Połącz</button>
+      }
+      <button (click)="refresh()">Odśwież</button>
     </div>
   </div>
 
-  <!-- Loading -->
-  @if (stocksStore.isLoading()) {
+  @if (isLoading) {
     <div class="p-8 text-center text-blue-500">
       Ładowanie danych akcji...
     </div>
   }
 
-  <!-- Error -->
-  @else if (stocksStore.error()) {
+  @else if (isError) {
     <div class="p-8 text-center text-red-500">
       <p>Błąd: {{ stocksStore.error() }}</p>
       <button
-        (click)="stocksStore.refresh()"
+        (click)="refresh()"
         class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
         Spróbuj ponownie
       </button>
@@ -94,7 +97,6 @@
     </div>
   }
 
-  <!-- Empty State -->
   @else {
     <div class="p-8 text-center text-gray-500">
       Brak danych akcji.
