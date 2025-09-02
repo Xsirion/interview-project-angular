@@ -1,7 +1,7 @@
 import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
 import { computed, inject } from '@angular/core';
 import { ConnectionStatus, Stock } from '../model/stock.model';
-import { SignalRService } from '../services/signalr.service';
+import { StocksService } from '../services/stocks.service';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap, catchError, EMPTY, timer, from } from 'rxjs';
 
@@ -40,7 +40,7 @@ export const StocksStore = signalStore(
     hasAnimations: computed(() => state.activeAnimations().size > 0),
   })),
 
-  withMethods((store, signalRService = inject(SignalRService)) => {
+  withMethods((store, stocksService = inject(StocksService)) => {
     const methods = {
       setLoading(isLoading: boolean) {
         patchState(store, { isLoading });
@@ -129,7 +129,7 @@ export const StocksStore = signalStore(
         pipe(
           tap(() => patchState(store, { isLoading: true, error: null })),
           switchMap(() =>
-            signalRService
+            stocksService
               .connect()
               .then(() => ({ success: true }))
               .catch(() => ({ success: false })),
@@ -158,21 +158,21 @@ export const StocksStore = signalStore(
 
       listenToConnectionStatus: rxMethod<void>(
         pipe(
-          switchMap(() => signalRService.connectionStatus),
+          switchMap(() => stocksService.connectionStatus),
           tap((status) => methods.setConnectionStatus(status)),
         ),
       ),
 
       listenToStockUpdates: rxMethod<void>(
         pipe(
-          switchMap(() => signalRService.stockUpdates),
+          switchMap(() => stocksService.stockUpdates),
           tap((stock) => methods.updateStock(stock)),
         ),
       ),
 
       listenToAllStocks: rxMethod<void>(
         pipe(
-          switchMap(() => signalRService.allStocks),
+          switchMap(() => stocksService.allStocks),
           tap((stocks) => {
             methods.setStocks(stocks);
             patchState(store, { isLoading: false });
@@ -183,7 +183,7 @@ export const StocksStore = signalStore(
       loadStocksHttp: rxMethod<void>(
         pipe(
           tap(() => patchState(store, { isLoading: true })),
-          switchMap(() => signalRService.getStocksHttp()),
+          switchMap(() => stocksService.getStocksHttp()),
           tap((stocks) => {
             methods.setStocks(stocks);
             patchState(store, { isLoading: false });
@@ -198,7 +198,7 @@ export const StocksStore = signalStore(
       refresh: rxMethod<void>(
         pipe(
           tap(() => patchState(store, { isLoading: true, error: null })),
-          switchMap(() => from(signalRService.getStocksHttp())),
+          switchMap(() => from(stocksService.getStocksHttp())),
           tap((stocks) => {
             methods.setStocks(stocks);
             patchState(store, { isLoading: false });
