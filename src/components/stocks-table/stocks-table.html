@@ -20,7 +20,6 @@
 
   @if (isLoading) {
     <div class="p-8 text-center text-blue-500">Ładowanie danych akcji...</div>
-
   } @else if (isError) {
     <div class="p-8 text-center text-red-500">
       <p>Błąd: {{ stocksStore.error() }}</p>
@@ -31,7 +30,6 @@
         Spróbuj ponownie
       </button>
     </div>
-
   } @else if (stocksStore.stocksCount() > 0) {
     <div class="overflow-x-auto">
       <table class="w-full">
@@ -58,7 +56,6 @@
         </tbody>
       </table>
     </div>
-
   } @else {
     <div class="p-8 text-center text-gray-500">Brak danych akcji.</div>
   }

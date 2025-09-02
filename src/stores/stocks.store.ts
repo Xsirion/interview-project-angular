@@ -41,7 +41,7 @@ export const StocksStore = signalStore(
   })),
 
   withMethods((store, stocksService = inject(StocksService)) => {
-    const activeTimeouts = new Set<number>();
+    const activeTimeouts = new Set<ReturnType<typeof globalThis.setTimeout>>();
 
     const methods = {
       setLoading(isLoading: boolean) {
