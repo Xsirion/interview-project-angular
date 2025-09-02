@@ -3,10 +3,14 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "lint": "eslint src/**/*.ts src/**/*.html",
+    "lint:fix": "eslint src/**/*.ts src/**/*.html --fix",
+    "format": "prettier --write src/**/*.{ts,html,css,scss,json}",
+    "format:check": "prettier --check src/**/*.{ts,html,css,scss,json}"
   },
   "prettier": {
     "printWidth": 100,
@@ -28,7 +32,12 @@
     "@angular/forms": "^20.2.0",
     "@angular/platform-browser": "^20.2.0",
     "@angular/router": "^20.2.0",
+    "@microsoft/signalr": "^9.0.6",
+    "@ngrx/signals": "^20.0.1",
+    "@tailwindcss/postcss": "^4.1.12",
+    "postcss": "^8.5.6",
     "rxjs": "~7.8.0",
+    "tailwindcss": "^4.1.12",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },
@@ -36,13 +45,20 @@
     "@angular/build": "^20.2.0",
     "@angular/cli": "^20.2.0",
     "@angular/compiler-cli": "^20.2.0",
+    "@prettier/plugin-pug": "^3.4.2",
     "@types/jasmine": "~5.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "prettier": "^3.6.2",
     "typescript": "~5.9.2"
   }
 }

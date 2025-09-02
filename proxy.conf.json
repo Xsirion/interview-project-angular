@@ -1,0 +1,9 @@
+{
+  "/stocks": {
+    "target": "http://localhost:32770",
+    "secure": false,
+    "changeOrigin": true,
+    "ws": true,
+    "logLevel": "debug"
+  }
+}
