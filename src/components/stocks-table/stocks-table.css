@@ -1,0 +1,59 @@
+.sort-icon {
+  transition: transform 0.2s ease-in-out;
+}
+
+.sort-icon:hover {
+  transform: scale(1.1);
+}
+
+/* === ANIMACJE ZMIAN DANYCH === */
+
+/* Keyframes dla animacji */
+@keyframes flashGreen {
+  0% { background-color: transparent; }
+  50% { background-color: #dcfce7; }
+  100% { background-color: transparent; }
+}
+
+@keyframes flashRed {
+  0% { background-color: transparent; }
+  50% { background-color: #fee2e2; }
+  100% { background-color: transparent; }
+}
+
+@keyframes flashBlue {
+  0% { background-color: transparent; }
+  25% { background-color: #dbeafe; }
+  50% { background-color: transparent; }
+  75% { background-color: #dbeafe; }
+  100% { background-color: transparent; }
+}
+
+/* Klasy animacji dla komórek */
+.cell-increase {
+  animation: flashGreen 0.8s ease-in-out;
+}
+
+.cell-decrease {
+  animation: flashRed 0.8s ease-in-out;
+}
+
+.cell-time-update {
+  animation: flashBlue 1.5s ease-in-out;
+}
+
+/* Klasy animacji dla tekstu */
+.text-increase {
+  color: #16a34a !important;
+  font-weight: 600;
+}
+
+.text-decrease {
+  color: #dc2626 !important;
+  font-weight: 600;
+}
+
+.text-time-updated {
+  color: #2563eb !important;
+  font-weight: 600;
+}
