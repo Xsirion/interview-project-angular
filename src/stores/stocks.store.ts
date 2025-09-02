@@ -41,6 +41,8 @@ export const StocksStore = signalStore(
   })),
 
   withMethods((store, stocksService = inject(StocksService)) => {
+    const activeTimeouts = new Set<number>();
+
     const methods = {
       setLoading(isLoading: boolean) {
         patchState(store, { isLoading });
@@ -58,6 +60,13 @@ export const StocksStore = signalStore(
         patchState(store, { error: null });
       },
 
+      getErrorMessage(error: { message: string; status: number }): string {
+        if (typeof error === 'string') return error;
+        if (error?.message) return error.message;
+        if (error?.status) return `Błąd HTTP ${error.status}`;
+        return 'Wystąpił nieznany błąd';
+      },
+
       triggerAnimation(symbol: string, field: string, type: AnimationType) {
         const animationKey = `${symbol}-${field}-${type}`;
         const currentAnimations = new Set(store.activeAnimations());
@@ -66,11 +75,23 @@ export const StocksStore = signalStore(
         patchState(store, { activeAnimations: currentAnimations });
 
         const duration = type === 'time-update' ? 1500 : 800;
-        (globalThis as any).setTimeout(() => {
+
+        const timeoutId = globalThis.setTimeout(() => {
           const updatedAnimations = new Set(store.activeAnimations());
           updatedAnimations.delete(animationKey);
           patchState(store, { activeAnimations: updatedAnimations });
+
+          activeTimeouts.delete(timeoutId);
         }, duration);
+
+        activeTimeouts.add(timeoutId);
+      },
+
+      cleanup() {
+        activeTimeouts.forEach((timeoutId) => {
+          globalThis.clearTimeout(timeoutId);
+        });
+        activeTimeouts.clear();
       },
 
       detectChanges(newStock: Stock, oldStock?: Stock) {
@@ -142,15 +163,19 @@ export const StocksStore = signalStore(
               tap(() => {
                 if (store.stocks().length === 0) {
                   patchState(store, {
-                    error: 'Brak danych z serwera po 3 sekundach',
+                    error: 'Brak danych z serwera',
                     isLoading: false,
                   });
                 }
               }),
             ),
           ),
-          catchError(() => {
-            patchState(store, { error: 'Błąd inicjalizacji', isLoading: false });
+          catchError((error) => {
+            console.error('Store initialization error:', error);
+            patchState(store, {
+              error: methods.getErrorMessage(error),
+              isLoading: false,
+            });
             return EMPTY;
           }),
         ),
@@ -167,6 +192,13 @@ export const StocksStore = signalStore(
         pipe(
           switchMap(() => stocksService.stockUpdates),
           tap((stock) => methods.updateStock(stock)),
+          catchError((error) => {
+            console.error('Stock updates error:', error);
+            patchState(store, {
+              error: methods.getErrorMessage(error),
+            });
+            return EMPTY;
+          }),
         ),
       ),
 
@@ -176,6 +208,14 @@ export const StocksStore = signalStore(
           tap((stocks) => {
             methods.setStocks(stocks);
             patchState(store, { isLoading: false });
+          }),
+          catchError((error) => {
+            console.error('All stocks error:', error);
+            patchState(store, {
+              error: methods.getErrorMessage(error),
+              isLoading: false,
+            });
+            return EMPTY;
           }),
         ),
       ),
@@ -188,8 +228,12 @@ export const StocksStore = signalStore(
             methods.setStocks(stocks);
             patchState(store, { isLoading: false });
           }),
-          catchError(() => {
-            patchState(store, { error: 'Nie udało się załadować danych', isLoading: false });
+          catchError((error) => {
+            console.error('Store refresh error:', error);
+            patchState(store, {
+              error: methods.getErrorMessage(error),
+              isLoading: false,
+            });
             return EMPTY;
           }),
         ),
@@ -203,8 +247,12 @@ export const StocksStore = signalStore(
             methods.setStocks(stocks);
             patchState(store, { isLoading: false });
           }),
-          catchError(() => {
-            patchState(store, { error: 'Nie udało się odświeżyć', isLoading: false });
+          catchError((error) => {
+            console.error('Store refresh error:', error);
+            patchState(store, {
+              error: methods.getErrorMessage(error),
+              isLoading: false,
+            });
             return EMPTY;
           }),
         ),

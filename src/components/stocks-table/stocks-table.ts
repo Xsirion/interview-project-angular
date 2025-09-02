@@ -38,6 +38,7 @@ export class StocksTable implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.stocksStore.cleanup();
     this.stocksService.disconnect();
   }
 
