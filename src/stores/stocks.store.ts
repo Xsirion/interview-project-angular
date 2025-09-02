@@ -5,14 +5,6 @@ import { SignalRService } from '../services/signalr.service';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap, catchError, EMPTY, timer, from } from 'rxjs';
 
-// Interfejs dla animacji
-// export interface StockAnimation {
-//   symbol: string;
-//   field: string;
-//   type: 'increase' | 'decrease' | 'time-update';
-//   timestamp: number;
-// }
-
 type AnimationType = 'increase' | 'decrease' | 'time-update';
 
 export interface StocksState {
@@ -22,10 +14,7 @@ export interface StocksState {
   connectionStatus: ConnectionStatus;
   error: string | null;
   lastUpdateTime: string;
-  // Dodane dla animacji
   activeAnimations: Set<string>;
-  // animations: StockAnimation[];
-  // previousValues: Record<string, Stock>; // Poprzednie wartości dla porównania
 }
 
 const initialState: StocksState = {
@@ -36,8 +25,6 @@ const initialState: StocksState = {
   error: null,
   lastUpdateTime: '',
   activeAnimations: new Set<string>(),
-  // animations: [],
-  // previousValues: {},
 };
 
 export const StocksStore = signalStore(
@@ -50,18 +37,7 @@ export const StocksStore = signalStore(
     gainCount: computed(() => state.stocks().filter((stock) => stock.change > 0).length),
     lossCount: computed(() => state.stocks().filter((stock) => stock.change < 0).length),
 
-    // Computed dla animacji
     hasAnimations: computed(() => state.activeAnimations().size > 0),
-
-    // Mapa animacji według symbolu i pola
-    // animationMap: computed(() => {
-    //   const map = new Map<string, StockAnimation>();
-    //   state.animations().forEach((anim) => {
-    //     const key = `${anim.symbol}-${anim.field}`;
-    //     map.set(key, anim);
-    //   });
-    //   return map;
-    // }),
   })),
 
   withMethods((store, signalRService = inject(SignalRService)) => {
@@ -82,16 +58,13 @@ export const StocksStore = signalStore(
         patchState(store, { error: null });
       },
 
-      // UPROSZCZONA animacja - jedna metoda do wszystkiego
       triggerAnimation(symbol: string, field: string, type: AnimationType) {
         const animationKey = `${symbol}-${field}-${type}`;
         const currentAnimations = new Set(store.activeAnimations());
 
-        // Dodaj animację
         currentAnimations.add(animationKey);
         patchState(store, { activeAnimations: currentAnimations });
 
-        // Usuń po czasie
         const duration = type === 'time-update' ? 1500 : 800;
         (globalThis as any).setTimeout(() => {
           const updatedAnimations = new Set(store.activeAnimations());
@@ -100,11 +73,9 @@ export const StocksStore = signalStore(
         }, duration);
       },
 
-      // UPROSZCZONA detekcja zmian
       detectChanges(newStock: Stock, oldStock?: Stock) {
         if (!oldStock) return;
 
-        // Sprawdź tylko kluczowe pola
         if (oldStock.price !== newStock.price) {
           const type = newStock.price > oldStock.price ? 'increase' : 'decrease';
           this.triggerAnimation(newStock.symbol, 'price', type);
@@ -124,12 +95,10 @@ export const StocksStore = signalStore(
         const currentStocks = store.stocks();
         const oldStock = currentStocks.find((s) => s.symbol === updatedStock.symbol);
 
-        // Animacje
         if (oldStock) {
           this.detectChanges(updatedStock, oldStock);
         }
 
-        // Aktualizacja danych
         const updatedStocks = currentStocks.map((stock) =>
           stock.symbol === updatedStock.symbol ? updatedStock : stock,
         );
@@ -148,17 +117,14 @@ export const StocksStore = signalStore(
         });
       },
 
-      // UPROSZCZONA metoda sprawdzania animacji
       hasAnimation(symbol: string, field: string, type?: AnimationType): boolean {
         const animations = store.activeAnimations();
         if (type) {
           return animations.has(`${symbol}-${field}-${type}`);
         }
-        // Sprawdź czy ma jakąkolwiek animację dla tego pola
         return Array.from(animations).some((key) => key.startsWith(`${symbol}-${field}-`));
       },
 
-      // Reszta metod bez zmian...
       initialize: rxMethod<void>(
         pipe(
           tap(() => patchState(store, { isLoading: true, error: null })),

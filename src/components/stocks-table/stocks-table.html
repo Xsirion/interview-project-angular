@@ -1,201 +1,103 @@
 <div class="bg-white rounded-lg shadow-lg overflow-hidden m-5">
+  <!-- Header -->
   <div class="bg-blue-800 text-white px-6 py-4">
     <h2 class="text-xl font-semibold">Tabela Akcji</h2>
     <div class="text-sm mt-1 flex items-center gap-4">
       <span>Status: {{ stocksStore.connectionStatus() }}</span>
       <span>Akcji: {{ stocksStore.stocksCount() }}</span>
-      <span
-        [ngClass]="
-          stocksStore.connectionStatus() === 'Connected' ? 'text-green-300' : 'text-red-300'
-        "
-      >
-        🔗 {{ stocksStore.isConnected() ? 'Połączono z Docker' : 'Brak połączenia z Docker' }}
-      </span>
       <span class="text-green-300">Wzrosty: {{ stocksStore.gainCount() }}</span>
       <span class="text-red-300">Spadki: {{ stocksStore.lossCount() }}</span>
-      <!-- <button (click)="signalRService.disconnect()">disconnect</button>
-      <button (click)="signalRService.connect()">connect</button> -->
       @if (stocksStore.lastUpdateTime()) {
         <span>Ostatnia aktualizacja: {{ formatDate(stocksStore.lastUpdateTime()) }}</span>
       }
     </div>
   </div>
-  <div class="overflow-x-auto">
-    <table class="w-full">
-      <thead class="bg-blue-800 text-white">
-        <tr>
-          <th
-            class="px-4 py-3 text-left font-medium transition-colors"
-          >
-            <div class="flex items-center">
-              Walor
-              <span class="ml-1 text-xs">↕</span>
-            </div>
-          </th>
-          <th
-            class="px-4 py-3 text-right font-medium transition-colors"
-          >
-            <div class="flex items-center justify-end">
-              Kurs
-              <span class="ml-1 text-xs">↕</span>
-            </div>
-          </th>
-          <th
-            class="px-4 py-3 text-right font-medium transition-colors"
-          >
-            <div class="flex items-center justify-end">
-              Zmiana
-              <span class="ml-1 text-xs">↕</span>
-            </div>
-          </th>
-          <th
-            class="px-4 py-3 text-right font-medium transition-colors"
-          >
-            <div class="flex items-center justify-end">
-              Zmiana %
-              <span class="ml-1 text-xs">↕</span>
-            </div>
-          </th>
-          <th
-            class="px-4 py-3 text-right font-medium transition-colors"
-          >
-            <div class="flex items-center justify-end">
-              Otwarcie
-              <span class="ml-1 text-xs">↕</span>
-            </div>
-          </th>
-          <th
-            class="px-4 py-3 text-right font-medium transition-colors"
-          >
-            <div class="flex items-center justify-end">
-              Max
-              <span class="ml-1 text-xs">↕</span>
-            </div>
-          </th>
-          <th
-            class="px-4 py-3 text-right font-medium transition-colors"
-          >
-            <div class="flex items-center justify-end">
-              Min
-              <span class="ml-1 text-xs">↕</span>
-            </div>
-          </th>
-          <th
-            class="px-4 py-3 text-right font-medium transition-colors"
-          >
-            <div class="flex items-center justify-end">
-              Czas
-              <span class="ml-1 text-xs">↕</span>
-            </div>
-          </th>
-        </tr>
-      </thead>
 
-      <tbody>
-        @for (stock of stocksStore.stocks(); track stock.symbol) {
-        <tr
-          class="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-        >
-          <td class="px-4 py-3 text-left font-medium text-gray-900">
-            {{ stock.symbol }}
-          </td>
-
-          <td class="px-4 py-3 text-right" [class]="getCellAnimationClass(stock.symbol, 'price')">
-            <span
-              [class]="
-                getChangeClass(stock.change) + ' ' + getValueTextClass(stock.symbol, 'price')
-              "
-              class="font-medium"
-            >
-              {{ formatPrice(stock.price) }}
-            </span>
-          </td>
-
-          <td class="px-4 py-3 text-right" [class]="getCellAnimationClass(stock.symbol, 'change')">
-            <span
-              [class]="
-                getChangeClass(stock.change) + ' ' + getValueTextClass(stock.symbol, 'change')
-              "
-              class="font-medium"
-            >
-              {{ getChangeIcon(stock.change) }} {{ formatPrice(abs(stock.change)) }}
-            </span>
-          </td>
-
-          <td
-            class="px-4 py-3 text-right"
-            [class]="getCellAnimationClass(stock.symbol, 'percentChange')"
-          >
-            <span
-              [class]="
-                getChangeClass(stock.percentChange) +
-                ' ' +
-                getValueTextClass(stock.symbol, 'percentChange')
-              "
-              class="font-medium"
-            >
-              {{ formatPercent(stock.percentChange) }}
-            </span>
-          </td>
-
-          <td
-            class="px-4 py-3 text-right text-gray-700"
-            [class]="getCellAnimationClass(stock.symbol, 'dayOpen')"
-          >
-            <span [class]="getValueTextClass(stock.symbol, 'dayOpen')">
-              {{ formatPrice(stock.dayOpen) }}
-            </span>
-          </td>
-
-          <td
-            class="px-4 py-3 text-right text-gray-700"
-            [class]="getCellAnimationClass(stock.symbol, 'dayMax')"
-          >
-            <span [class]="getValueTextClass(stock.symbol, 'dayMax')">
-              {{ formatPrice(stock.dayMax) }}
-            </span>
-          </td>
-
-          <td
-            class="px-4 py-3 text-right text-gray-700"
-            [class]="getCellAnimationClass(stock.symbol, 'dayMin')"
-          >
-            <span [class]="getValueTextClass(stock.symbol, 'dayMin')">
-              {{ formatPrice(stock.dayMin) }}
-            </span>
-          </td>
-
-          <td
-            class="px-4 py-3 text-right text-gray-700"
-            [class]="getCellAnimationClass(stock.symbol, 'lastUpdate')"
-          >
-            <span [class]="getValueTextClass(stock.symbol, 'lastUpdate')">
-              {{ formatDate(stock.lastUpdate) }}
-            </span>
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-
+  <!-- Loading -->
   @if (stocksStore.isLoading()) {
     <div class="p-8 text-center text-blue-500">
-      <p>Ładowanie danych akcji...</p>
+      Ładowanie danych akcji...
     </div>
-  } @else if (stocksStore.error()) {
+  }
+
+  <!-- Error -->
+  @else if (stocksStore.error()) {
     <div class="p-8 text-center text-red-500">
       <p>Błąd: {{ stocksStore.error() }}</p>
       <button
         (click)="stocksStore.refresh()"
-        class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
+        class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
         Spróbuj ponownie
       </button>
     </div>
-  } @else if (stocksStore.stocks().length === 0) {
+  }
+
+  @else if (stocksStore.stocksCount() > 0) {
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-blue-800 text-white">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium">Walor</th>
+            <th class="px-4 py-3 text-right font-medium">Kurs</th>
+            <th class="px-4 py-3 text-right font-medium">Zmiana</th>
+            <th class="px-4 py-3 text-right font-medium">Zmiana %</th>
+            <th class="px-4 py-3 text-right font-medium">Otwarcie</th>
+            <th class="px-4 py-3 text-right font-medium">Max</th>
+            <th class="px-4 py-3 text-right font-medium">Min</th>
+            <th class="px-4 py-3 text-right font-medium">Czas</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (stock of stocksStore.stocks(); track stock.symbol) {
+            <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+              <td class="px-4 py-3 text-left font-medium text-gray-900">
+                {{ stock.symbol }}
+              </td>
+
+              <td class="px-4 py-3 text-right" [class]="getCellAnimationClass(stock.symbol, 'price')">
+                <span [class]="getChangeClass(stock.change)" class="font-medium">
+                  {{ formatPrice(stock.price) }}
+                </span>
+              </td>
+
+              <td class="px-4 py-3 text-right" [class]="getCellAnimationClass(stock.symbol, 'change')">
+                <span [class]="getChangeClass(stock.change)" class="font-medium">
+                  {{ getChangeIcon(stock.change) }} {{ formatPrice(abs(stock.change)) }}
+                </span>
+              </td>
+
+              <td class="px-4 py-3 text-right">
+                <span [class]="getChangeClass(stock.percentChange)" class="font-medium">
+                  {{ formatPercent(stock.percentChange) }}
+                </span>
+              </td>
+
+              <td class="px-4 py-3 text-right text-gray-700">
+                {{ formatPrice(stock.dayOpen) }}
+              </td>
+
+              <td class="px-4 py-3 text-right text-gray-700">
+                {{ formatPrice(stock.dayMax) }}
+              </td>
+
+              <td class="px-4 py-3 text-right text-gray-700">
+                {{ formatPrice(stock.dayMin) }}
+              </td>
+
+              <td class="px-4 py-3 text-right text-gray-700" [class]="getCellAnimationClass(stock.symbol, 'lastUpdate')">
+                {{ formatDate(stock.lastUpdate) }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @else {
     <div class="p-8 text-center text-gray-500">
-      <p>Brak danych akcji.</p>
+      Brak danych akcji.
     </div>
   }
 </div>

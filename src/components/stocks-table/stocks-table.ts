@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { SignalRService } from '../../services/signalr.service';
 import { StocksStore } from '../../stores/stocks.store';
 
-import { Subscription } from 'rxjs';
+//import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-stocks-table',
@@ -15,57 +15,37 @@ export class StocksTable implements OnInit, OnDestroy {
   public signalRService = inject(SignalRService);
   protected readonly stocksStore = inject(StocksStore);
 
-  private subscription: Subscription = new Subscription();
-
   ngOnInit(): void {
-    this.setupStoreSubscriptions();
-
+    this.setupSubscriptions();
     this.stocksStore.initialize();
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
     this.signalRService.disconnect();
   }
 
-  getCellAnimationClass(symbol: string, field: string): string {
-    const animationType = this.stocksStore.getAnimationType(symbol, field);
-    if (!animationType) return '';
-
-    switch (animationType) {
-      case 'increase':
-        return 'cell-increase';
-      case 'decrease':
-        return 'cell-decrease';
-      case 'time-update':
-        return 'cell-time-update';
-      default:
-        return '';
-    }
-  }
-
-  getValueTextClass(symbol: string, field: string): string {
-    const animationType = this.stocksStore.getAnimationType(symbol, field);
-    if (!animationType) return '';
-
-    switch (animationType) {
-      case 'increase':
-        return 'text-increase';
-      case 'decrease':
-        return 'text-decrease';
-      case 'time-update':
-        return 'text-time-updated';
-      default:
-        return '';
-    }
-  }
-
-  private setupStoreSubscriptions(): void {
+  private setupSubscriptions(): void {
     this.stocksStore.listenToConnectionStatus();
     this.stocksStore.listenToStockUpdates();
     this.stocksStore.listenToAllStocks();
   }
 
+  // UPROSZCZONA metoda animacji - jedna zamiast dwóch
+  getCellAnimationClass(symbol: string, field: string): string {
+    // Sprawdź typ animacji i zwróć odpowiednią klasę
+    if (this.stocksStore.hasAnimation(symbol, field, 'increase')) {
+      return 'cell-increase';
+    }
+    if (this.stocksStore.hasAnimation(symbol, field, 'decrease')) {
+      return 'cell-decrease';
+    }
+    if (this.stocksStore.hasAnimation(symbol, field, 'time-update')) {
+      return 'cell-time-update';
+    }
+    return '';
+  }
+
+  // Formatowanie - bez zmian
   formatPrice(value: number): string {
     return value.toFixed(4).replace('.', ',');
   }
