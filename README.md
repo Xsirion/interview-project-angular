@@ -1,59 +1,70 @@
-# InterviewProjectAngular
+# Real-time Stock Trading Table - Angular Application for interview
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.2.0.
+A responsive Angular application displaying real-time stock market data using **SignalR WebSocket communication**.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- Real-time stock price updates
+- Responsive data table with sorting
+- Connection status monitoring
+- Custom pipes for price and percentage formatting
+- State management with @ngrx/signals
 
-```bash
-ng serve
-```
+## Tech Stack
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- **Angular 20** – Frontend framework  
+- **SignalR** – Real-time WebSocket communication  
+- **@ngrx/signals** – Application state management  
+- **RxJS** – Reactive programming  
+- **Tailwind CSS** – Styling and responsiveness  
+- **Vitest + @testing-library/angular** – Unit and integration testing  
 
-## Code scaffolding
+## Requirements to run project
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Node.js **18+**  
+- npm **8+**  
+- Docker (for backend)  
 
-```bash
-ng generate component component-name
-```
+## Installation & Setup
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### 1. Backend (SignalR Hub)
 
 ```bash
-ng test
+# Pull and run the SignalR backend
+docker pull kubamichalek/statscore-websocket-recruitment
+docker run -p 32770:8080 --rm kubamichalek/statscore-websocket-recruitment
 ```
 
-## Running end-to-end tests
+Backend available at http://localhost:32770
 
-For end-to-end (e2e) testing, run:
-
+### 2. Frontend
 ```bash
-ng e2e
+# Clone repository
+git clone git@github.com:Xsirion/interview-project-angular.git
+cd interview-project-angular
+
+# Install dependencies
+npm install or npm i
+
+# Start development server
+npm start
 ```
+App available at → http://localhost:4200
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
-## Additional Resources
+ ## Available Scripts
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### Development
+npm start              # ng serve
+npm run build          # ng build
+
+### Testing
+npm test               # vitest (interactive)
+npm run test:run       # vitest run (CI)
+npm run test:ui        # Vitest UI dashboard
+
+### Code Quality
+npm run lint           # ESLint
+npm run format         # format code by Prettier
+npm run lint:fix       # Auto-fix ESLint issues
+npm run format:check   # Check code formatting

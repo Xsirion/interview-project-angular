@@ -6,6 +6,7 @@ import prettier from 'eslint-plugin-prettier';
 export default [
   {
     files: ['**/*.ts'],
+    ignores: ['**/*.spec.ts'],
     languageOptions: {
       parser: tsparser,
       parserOptions: {
@@ -25,6 +26,7 @@ export default [
       '@typescript-eslint/no-explicit-any': 'warn',
       'prefer-const': 'error',
       'no-var': 'error',
+      'no-console': ['error', { allow: ['warn', 'error'] }],
     },
   },
   {
