@@ -35,7 +35,7 @@ docker pull kubamichalek/statscore-websocket-recruitment
 docker run -p 32770:8080 --rm kubamichalek/statscore-websocket-recruitment
 ```
 
-Backend available at http://localhost:32770
+Backend available at: http://localhost:32770
 
 ### 2. Frontend
 ```bash
@@ -49,7 +49,7 @@ npm install or npm i
 # Start development server
 npm start
 ```
-App available at → http://localhost:4200
+App available at: http://localhost:4200
 
 
  ## Available Scripts
