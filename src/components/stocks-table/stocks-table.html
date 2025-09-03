@@ -10,11 +10,11 @@
         <span>Ostatnia aktualizacja: {{ stocksStore.lastUpdateTime() | customDate }}</span>
       }
       @if (isConnected) {
-        <button (click)="disconnect()">Rozłącz</button>
+        <button class="cursor-pointer" (click)="disconnect()">Rozłącz</button>
       } @else {
-        <button (click)="connect()">Połącz</button>
+        <button class="cursor-pointer" (click)="connect()">Połącz</button>
       }
-      <button (click)="refresh()">Odśwież</button>
+      <button class="cursor-pointer" (click)="refresh()">Odśwież</button>
     </div>
   </div>
 
